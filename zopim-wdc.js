@@ -25,18 +25,25 @@ function init() {
 
 function getTicket(table, doneCallback) {
   var access_token = tableau.connectionData;
-  makeRequest(table, access_token, doneCallback);
+  makeRequest(table, access_token, doneCallback, 'https://www.zopim.com/api/v2/chats.json?sort_by=timestamp');
 }
 
-function makeRequest(table, token, doneCallback) {
+function makeRequest(table, token, doneCallback, next_url) {
   console.log('Token', token)
   $.ajax({
     type: 'GET',
-    url: 'https://web-api.bdswiss.com/api/external/zopim?token=' + token,
+    url: 'https://web-api.bdswiss.com/api/external/zopim?token=' + token + '&next_url=' + next_url,
     success: function(data) {
-      table.appendRows(data)
-      console.log(data)
-      doneCallback()
+      data = JSON.parse(data)
+      if (data.next_url) {
+        table.appendRows(data.tableData)
+        console.log(data)
+        makeRequest(table, token, doneCallback, data.next_url)
+      } else {
+        table.appendRows(data.tableData)
+        console.log(data)
+        doneCallback()
+      }
     },
     headers: {
       'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic2VydmljZSIsImlkIjoiem9waW0ifQ.MOoZ0H9TeQPX5ay_EvLzqb2CFe1ctxltHjDolFmajcs'
@@ -150,7 +157,7 @@ function getData(table, doneCallback) {
         startAuthFlow()
       })
       $('#submitButton').click(function () {
-        tableau.connectionName = 'BDSwiss Zendesk Data'
+        tableau.connectionName = 'BDSwiss Zopim Data'
         tableau.connectionData = wdc_access_token
         tableau.submit()
       })
