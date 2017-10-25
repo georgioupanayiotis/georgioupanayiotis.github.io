@@ -39,7 +39,7 @@ function makeRequest(table, token, doneCallback) {
       doneCallback()
     },
     headers: {
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic2VydmljZSIsImlkIjoiem9waW0ifQ.Tn5nQGDSWPUW-j-4slE9sxn3WMm_knggjJEpyRtsqlc'
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoic2VydmljZSIsImlkIjoiem9waW0ifQ.MOoZ0H9TeQPX5ay_EvLzqb2CFe1ctxltHjDolFmajcs'
     },
     error: function(error) {
       console.log('Error', error)
