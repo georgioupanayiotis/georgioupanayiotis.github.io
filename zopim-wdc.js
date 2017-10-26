@@ -2,19 +2,11 @@ var wdc_access_token
 function init() {
   // reset page
   var url = window.location.href;
-  console.log('url', url)
-
   if (url.indexOf('https://georgioupanayiotis.github.io/zopim-wdc.html') !== -1) {
     if (url.indexOf('access_token=') !== -1) {
       var access_token = readUrlParam(url, 'access_token');
       wdc_access_token = access_token
     }
-    else if(url.indexOf('code')!== -1){
-      var split_url = new URL(url);
-      var code = split_url.searchParams.get("code");
-      var test = getAccessToken(code)
-    }
-
     if (url.indexOf('error=') !== -1) {
       var error_desc = readUrlParam(url, 'error_description');
       var msg = 'Authorization error: ' + error_desc;
@@ -29,19 +21,16 @@ function getTicket(table, doneCallback) {
 }
 
 function makeRequest(table, token, doneCallback, next_url) {
-  console.log('Token', token)
   $.ajax({
     type: 'GET',
-    url: 'https://web-api.bdswiss.com/api/external/zopim?token=' + token + '&next_url=' + next_url,
+    url: 'https://web-api.bdswiss.com/api/external/zopim?token=' + token + '&url=' + next_url,
     success: function(data) {
       data = JSON.parse(data)
       if (data.next_url) {
         table.appendRows(data.tableData)
-        console.log(data)
         makeRequest(table, token, doneCallback, data.next_url)
       } else {
         table.appendRows(data.tableData)
-        console.log(data)
         doneCallback()
       }
     },
@@ -82,23 +71,7 @@ function startAuthFlow() {
   'client_id=GyZtMNKrhn9zE82OJM1GA4zLOuHtAlNSz9eplhDCFupacJYxPl' + '&' +
   'scope=read%20write' + '&' +
   'subdomain=bdswiss'
-  console.log(endpoint + url_params)
   window.location = endpoint + url_params;
-}
-
-function getAccessToken(code){
-  console.log('Code', code)
-
-  $.ajax({
-    type: 'POST',
-    url: 'https://www.zopim.com/oauth2/token?grant_type=authorization_code&code='+code+'&client_id=GyZtMNKrhn9zE82OJM1GA4zLOuHtAlNSz9eplhDCFupacJYxPl&client_secret=pFTmd0N5Mb7F5GcGBdsXJvY0siyE18Ff34OfzzqooRIFWqhNAc0vzXIS5sOAesCK&redirect_uri=https%3A%2F%2Fgeorgioupanayiotis.github.io%2Fzopim-wdc.html&scope=read%20write',
-    success: function(data) {
-      console.log('Data', data)
-    },
-    error: function(error) {
-      console.log(error)
-    }
-  });
 }
 
 window.addEventListener('load', init, false);
